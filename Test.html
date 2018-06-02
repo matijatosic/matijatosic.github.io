@@ -1,1 +1,263 @@
-test placeholder
+<pre style="font-family: monospace;">
+  package pomoc;
+
+  import java.time.LocalDate;
+  import java.time.format.DateTimeFormatter;
+  import java.util.Scanner;
+
+  public class Bitno {
+  	public static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy.");
+  	public static Scanner sc = new Scanner (System.in);
+
+
+  	//stampa zaglavlje za tabelarni ispis kontakata
+  	public static void printFormatedHeader() {
+  		System.out.printf("%15s %20s %20s %15s %15s %15s %20s \n", "Id",
+  				"Ime kontakta", "Prezime kontakta", "Naziv radnog mesta",
+  				"Broj prostorije", "Broj lokala", "Datum");
+  		System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
+
+  	}
+
+  	//////////////////////DODAVANJE U TESTU//////////////////
+  	public static void unesi(KlasaSaListom objekatSaListom) {
+
+  		int id;
+  		String idS;
+  		String naziv;
+  		double decimalniBroj;
+  		String decimalniBrojS;
+  		int celiBroj;
+  		String celiBrojS;
+  		LocalDate datum;
+  		String datumS;
+
+  		do {
+  			System.out.print("Identifikacioni broj: ");
+  			idS = sc.nextLine();
+  		} while(!isIdValid(idS));
+  		id = Integer.parseInt(idS);
+
+  		System.out.print("Naziv: ");
+  		naziv = sc.nextLine();
+
+  		do {
+  			System.out.print("Celi broj: ");
+  			celiBrojS = sc.nextLine();
+  		} while(!isInteger(celiBrojS));
+  		celiBroj = Integer.parseInt(celiBrojS);
+
+  		do {
+  			System.out.print("Novi decimalni broj: ");
+  			decimalniBrojS = sc.nextLine();
+  		} while(!isDouble(decimalniBrojS));
+  		decimalniBroj = Double.parseDouble(decimalniBrojS);
+
+  		do {
+  			System.out.print("Novi datum : ");
+  			datumS = sc.nextLine();
+  		} while(!isDateValid(datumS));
+  		datum = LocalDate.parse(datumS, dtf);
+
+  		KlasaClan clan = new KlasaClan (id, naziv, celiBroj, decimalniBroj, datum);
+  		boolean provera = objekatSaListom.dodavanje(clan);
+  		if(provera) {
+  			System.out.println("Transakcija je uspe�no dodata.");
+  		} else {
+  			System.out.println("Transakcija nije uspe�no dodata.");
+  		}
+  	}
+
+  	public static void izmeniObjekatSaListom (KlasaSaListom objekatSaListom) {
+  		System.out.println("Unesite novi naziv: ");
+  		String naziv = sc.nextLine();
+  		objekatSaListom.setNaziv(naziv);
+  	}
+
+  	public static void izmeniClan (KlasaSaListom objekatSaListom) {
+
+  		int id;
+  		String idS;
+  		String naziv;
+  		double decimalniBroj;
+  		String decimalniBrojS;
+  		int celiBroj;
+  		String celiBrojS;
+  		LocalDate datum;
+  		String datumS;
+
+  		do {
+  			System.out.print("Postojeci dentifikacioni broj: ");
+  			idS = sc.nextLine();
+  		} while(!isIdValid(idS));
+  		id = Integer.parseInt(idS);
+
+  		System.out.print("Novi naziv: ");
+  		naziv = sc.nextLine();
+
+  		do {
+  			System.out.print("Novi celi broj: ");
+  			celiBrojS = sc.nextLine();
+  		} while(!isInteger(celiBrojS));
+  		celiBroj = Integer.parseInt(celiBrojS);
+
+  		do {
+  			System.out.print("Novi decimalni broj: ");
+  			decimalniBrojS = sc.nextLine();
+  		} while(!isDouble(decimalniBrojS));
+  		decimalniBroj = Double.parseDouble(decimalniBrojS);
+
+  		do {
+  			System.out.print("Novi datum : ");
+  			datumS = sc.nextLine();
+  		} while(!isDateValid(datumS));
+  		datum = LocalDate.parse(datumS, dtf);
+
+  		KlasaClan clan = new KlasaClan (id, naziv, celiBroj, decimalniBroj, datum);
+  		KlasaClan provera = objekatSaListom.izmena(clan);
+  		if(provera != null) {
+  			System.out.println("Transakcija je uspesno izmenjena.");
+  		} else {
+  			System.out.println("Transakcija nije uspesno izmenjena.");
+  		}
+  	}
+
+  	public static KlasaClan brisanjeClana (KlasaSaListom objekatSaListom) {
+
+  		int id;
+  		String isS = null;
+  		do {
+  			System.out.println("Identifikacioni broj inventara za brisanje: ");
+  			isS = sc.nextLine();
+  		} while(!isInteger(isS));
+  		id = Integer.valueOf(isS);
+
+  		KlasaClan provera =  objekatSaListom.brisanjePoId(id);
+  		if(provera == null) {
+  			System.out.println("Clan sa zadatim brojem ne postoji.");
+  		}
+  		return provera;
+  	}
+
+
+  //	System.out.println("Prvi datum: " + dtf.format(prviDatum));
+  //	System.out.println("Drugi datum: " + dtf.format(drugiDatum));
+
+
+
+  	public static boolean daLiJePrviDatumPreDrugog(String prviDatumS, String drugiDatumS) {
+  		LocalDate prviDatum = null;
+  		LocalDate drugiDatum = null;
+  		try {
+  			prviDatum = LocalDate.parse(prviDatumS, dtf);
+  			drugiDatum = LocalDate.parse(drugiDatumS, dtf);
+  			if (prviDatum.compareTo(drugiDatum) < 0) {
+  			    System.out.println("\nPrvi datum je pre drugog.");
+  			    return true;
+  //			} else if (prviDatum.compareTo(drugiDatum) > 0) {
+  //			    System.out.println("\nPrvi datum je posle drugog.");
+  //				return false;
+  			} else {
+  //			    System.out.println("\nJednaki su.");
+  				return false;
+  			}
+  		}catch (Exception e) {
+  			return false;
+  		}
+  	}
+
+
+
+  //	mojFormater.format(prviDatum) -- vraca String;
+  //	LocalDate.parse(String, dtf) ---- daje LocalDate;
+
+
+
+
+
+  	public static boolean daLiJePrestupna(int year) {
+  		if (year % 400 == 0) {
+  			return true;
+  		} else if (year % 100 == 0) {
+  			return false;
+  		} else if (year % 4 == 0) {
+  			return true;
+  		} else {
+  			return false;
+  		}
+  	}
+
+  	///////////////////////////////////////////////////////////////////////
+
+  	////////////PROVERA ZA OGRANICENJE ID MORA DA BUDE BROJ VECI OD 0///////////
+  	public static boolean isIdValid (String s) {
+  		try {
+  			int id = Integer.parseInt(s);
+  			if (id >= 1) {
+  				return true;
+  			}
+  			else{
+  				System.out.println("Identifikator mora imati vrednost vecu od 1");
+  				return false;
+  			}
+  		}catch(Exception e) {
+  			return false;
+  		}
+  	}
+
+  	public static boolean isDateValid (String stringDatum) {
+  		try {
+  			LocalDate.parse(stringDatum, dtf);
+  			return true;
+  		} catch (Exception e) {
+  			System.out.println("Uneli ste datum u pogresnom formatu. Pokusajte ponovo.");
+  			return false;
+  		}
+  	}
+
+  	public static boolean isDouble(String s) {
+  		try {
+  			Double.parseDouble(s);
+  			return true;
+  		}catch (Exception e) {
+  			return false;
+  		}
+  	}
+
+
+  	public static boolean isInteger(String s) {
+  		try {
+  			Integer.parseInt(s);
+  			return true;
+  		}catch (Exception e) {
+  			return false;
+  		}
+  	}
+
+
+  	public static void main(String[] args) {
+  		String answer;
+  		KlasaSaListom objekatSaListom = new KlasaSaListom(null);
+  		do {
+  			System.out.println("Meni:");
+
+  			System.out.println("x. Izlaz");
+
+  			answer = sc.nextLine();
+
+  			switch (answer) {
+  			case "1":
+
+  				break;
+  			case "2":
+
+  				break;
+  			case "x":
+  				break;
+  			}
+  		} while (answer != "x");
+  	}
+
+  }
+
+</pre>
