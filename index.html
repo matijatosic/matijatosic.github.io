@@ -37,7 +37,7 @@
             }
 
             .notch {
-                width: 5%;
+                width: 2.5%;
                 margin: 0;
                 border-right: 1px solid #EEE;
                 border-left: 1px solid #EEE;
@@ -59,7 +59,7 @@
             .type-W { background-color: #673AB7; }
             .type-LP { background-color: #a20000; }
             .type-DS { background-color: #ff9300; }
-            .type-BR { background-color: #55b8ff; }
+            .type-BR { background-color: #85ccff; }
             .type-empty { background-color: transparent; color: #000; }
         </style>
     </head>
@@ -253,7 +253,7 @@
                 const line = createDiv('.line');
                 dayEntryEl.appendChild(line);
                 const notches = createDiv('.notches');
-                Array(20).fill(0).forEach(() => notches.appendChild(createDiv('.notch')));
+                Array(40).fill(0).forEach(() => notches.appendChild(createDiv('.notch')));
                 dayEntryEl.appendChild(notches);
 
                 const introBlock = createDiv('.block');
