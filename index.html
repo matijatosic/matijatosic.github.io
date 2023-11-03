@@ -123,7 +123,7 @@
                     const imports = await (await fetch('/imports.json')).json();
                     Object.entries(imports).forEach(([datestamp, data]) => {
                         if (!localStorage[datestamp]) {
-                            localStorage[datestamp] = data;
+                            localStorage[datestamp] = JSON.stringify(data);
                             if (
                                 !localStorage.oldestEntry ||
                                 new Date(localStorage.oldestEntry) > new Date(datestamp)
