@@ -103,59 +103,71 @@
             const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
             const widthInMs = (18 - 8) * 60 * 60 * 1000;
 
-            let oldestEntry = localStorage.oldestEntry;
-            const days = [];
-            if (oldestEntry) {
-                let timestamp = Date.now();
-                let date;
-                do {
-                    date = new Date(timestamp);
-                    let datestamp = getDatestamp(date);
-                    if (localStorage[datestamp]) {
-                        days.unshift(JSON.parse(localStorage[datestamp]));
-                    }
-                    timestamp -= 24 * 60 * 60 * 1000;
-                } while (date > new Date(oldestEntry));
-            }
-            days.forEach(dayEntryData => createDayElement(dayEntryData));
-            createDayElement({
-                datestamp: '2222-12-22',
-                startTs: 7983043200000,
-                blocks: [['BR', 30], ['LP', 60], ['W', 120], ['BR', 30], ['DS', 30], ['W', 60], ['LP', 30], ['W', 60], ['BR', 30], ['DS', 30]]
-                    .map(([type, minutes]) => ({ type, duration: minutes * 60 * 1000 })),
-            });
-
-            document.querySelectorAll('button[data-type]').forEach(button => {
-                button.addEventListener('click', () => switchToActivity(button.dataset.type));
-            });
-
-            let currentActivityBlock = {
-                type: 'empty',
-                start: Date.now(),
-            };
-            let initialTodayStamp = getDatestamp(new Date());
-            let todayData = days.find(dayData => dayData.datestamp === initialTodayStamp);
-            if (todayData) {
-                const lastBlock = todayData.blocks[todayData.blocks.length - 1];
-                const lastBlockStart = todayData.startTs + todayData.blocks.slice(0, -1).map(b => b.duration).reduce((a, b) => a + b, 0);
-                console.log({
-                    lastBlock,
-                    lastBlockStart,
-                    lastBlockEnd: lastBlockStart + lastBlock.duration,
-                    now: Date.now(),
-                    diff: Date.now() - (lastBlockStart + lastBlock.duration),
-                });
-                if (Date.now() - (lastBlockStart + lastBlock.duration) < 60_000) {
-                    currentActivityBlock = {
-                        type: lastBlock.type,
-                        start: lastBlockStart,
-                    };
+            (async () => {
+                let oldestEntry = localStorage.oldestEntry;
+                const days = [];
+                if (oldestEntry) {
+                    let timestamp = Date.now();
+                    let date;
+                    do {
+                        date = new Date(timestamp);
+                        let datestamp = getDatestamp(date);
+                        if (localStorage[datestamp]) {
+                            days.unshift(JSON.parse(localStorage[datestamp]));
+                        }
+                        timestamp -= 24 * 60 * 60 * 1000;
+                    } while (date > new Date(oldestEntry));
                 }
-            }
-            indicateActiveButton();
 
-            setInterval(logActivity, 30000);
-            logActivity();
+                try {
+                    const imports = await (await fetch('/imports.json')).json();
+                    Object.entries(imports).forEach(([datestamp, data]) => {
+                        if (!localStorage[datestamp]) {
+                            localStorage[datestamp] = data;
+                        }
+                    });
+                } catch(e) {}
+
+                days.forEach(dayEntryData => createDayElement(dayEntryData));
+                createDayElement({
+                    datestamp: '2222-12-22',
+                    startTs: 7983043200000,
+                    blocks: [['BR', 30], ['LP', 60], ['W', 120], ['BR', 30], ['DS', 30], ['W', 60], ['LP', 30], ['W', 60], ['BR', 30], ['DS', 30]]
+                        .map(([type, minutes]) => ({ type, duration: minutes * 60 * 1000 })),
+                });
+
+                document.querySelectorAll('button[data-type]').forEach(button => {
+                    button.addEventListener('click', () => switchToActivity(button.dataset.type));
+                });
+
+                let currentActivityBlock = {
+                    type: 'empty',
+                    start: Date.now(),
+                };
+                let initialTodayStamp = getDatestamp(new Date());
+                let todayData = days.find(dayData => dayData.datestamp === initialTodayStamp);
+                if (todayData) {
+                    const lastBlock = todayData.blocks[todayData.blocks.length - 1];
+                    const lastBlockStart = todayData.startTs + todayData.blocks.slice(0, -1).map(b => b.duration).reduce((a, b) => a + b, 0);
+                    console.log({
+                        lastBlock,
+                        lastBlockStart,
+                        lastBlockEnd: lastBlockStart + lastBlock.duration,
+                        now: Date.now(),
+                        diff: Date.now() - (lastBlockStart + lastBlock.duration),
+                    });
+                    if (Date.now() - (lastBlockStart + lastBlock.duration) < 60_000) {
+                        currentActivityBlock = {
+                            type: lastBlock.type,
+                            start: lastBlockStart,
+                        };
+                    }
+                }
+                indicateActiveButton();
+
+                setInterval(logActivity, 30000);
+                logActivity();
+            })();
 
             function createDiv(idOrClass) {
                 const div = document.createElement('div');
