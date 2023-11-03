@@ -173,129 +173,129 @@
 
                 setInterval(logActivity, 30000);
                 logActivity();
-            })();
 
-            function createDiv(idOrClass) {
-                const div = document.createElement('div');
-                if (idOrClass[0] === '#') {
-                    div.id = idOrClass.substr(1);
-                } else {
-                    div.classList.add(idOrClass.substr(1));
-                }
-                return div;
-            }
-
-            function leadZero(n) { return n < 10 ? `0${n}` : n; }
-
-            function getDatestamp(date) {
-                let year = date.getFullYear(), month = date.getMonth() + 1, day = date.getDate();
-                return `${year}-${leadZero(month)}-${leadZero(day)}`;
-            }
-
-            function indicateActiveButton() {
-                document.querySelectorAll('button').forEach(b => b.style.color = '');
-                document.querySelector('button.type-' + currentActivityBlock.type).style.color = 'gray';
-            }
-
-            function switchToActivity(type) {
-                currentActivityBlock = {
-                    type,
-                    start: Date.now(),
-                };
-                indicateActiveButton();
-                const todayStamp = getDatestamp(new Date());
-                if (!localStorage.oldestEntry) {
-                    localStorage.oldestEntry = todayStamp;
-                }
-                if (localStorage[todayStamp]) {
-                    logActivity();
-                } else {
-                    localStorage[todayStamp] = JSON.stringify({
-                        datestamp: todayStamp,
-                        startTs: Date.now(),
-                        blocks: [{ type, duration: 0 }],
-                    });
-                }
-            }
-
-            function logActivity() {
-                const now = new Date();
-                if (now.getHours() < 8 || now.getHours() >= 18) return;
-                const todayStamp = getDatestamp(now);
-                if (!localStorage[todayStamp]) return;
-
-                const todayData = JSON.parse(localStorage[todayStamp]);
-                const lastBlock = todayData.blocks[todayData.blocks.length - 1];
-                if (lastBlock) {
-                    if (lastBlock.type === currentActivityBlock.type) {
-                        lastBlock.duration = Date.now() - currentActivityBlock.start;
+                function createDiv(idOrClass) {
+                    const div = document.createElement('div');
+                    if (idOrClass[0] === '#') {
+                        div.id = idOrClass.substr(1);
                     } else {
-                        todayData.blocks.push({
-                            type: currentActivityBlock.type,
-                            duration: Date.now() - currentActivityBlock.start,
+                        div.classList.add(idOrClass.substr(1));
+                    }
+                    return div;
+                }
+
+                function leadZero(n) { return n < 10 ? `0${n}` : n; }
+
+                function getDatestamp(date) {
+                    let year = date.getFullYear(), month = date.getMonth() + 1, day = date.getDate();
+                    return `${year}-${leadZero(month)}-${leadZero(day)}`;
+                }
+
+                function indicateActiveButton() {
+                    document.querySelectorAll('button').forEach(b => b.style.color = '');
+                    document.querySelector('button.type-' + currentActivityBlock.type).style.color = 'gray';
+                }
+
+                function switchToActivity(type) {
+                    currentActivityBlock = {
+                        type,
+                        start: Date.now(),
+                    };
+                    indicateActiveButton();
+                    const todayStamp = getDatestamp(new Date());
+                    if (!localStorage.oldestEntry) {
+                        localStorage.oldestEntry = todayStamp;
+                    }
+                    if (localStorage[todayStamp]) {
+                        logActivity();
+                    } else {
+                        localStorage[todayStamp] = JSON.stringify({
+                            datestamp: todayStamp,
+                            startTs: Date.now(),
+                            blocks: [{ type, duration: 0 }],
                         });
                     }
-                    localStorage[todayStamp] = JSON.stringify(todayData);
                 }
 
-                if (!document.querySelector('#day-' + todayStamp)) {
-                    createDayElement(todayData);
+                function logActivity() {
+                    const now = new Date();
+                    if (now.getHours() < 8 || now.getHours() >= 18) return;
+                    const todayStamp = getDatestamp(now);
+                    if (!localStorage[todayStamp]) return;
+
+                    const todayData = JSON.parse(localStorage[todayStamp]);
+                    const lastBlock = todayData.blocks[todayData.blocks.length - 1];
+                    if (lastBlock) {
+                        if (lastBlock.type === currentActivityBlock.type) {
+                            lastBlock.duration = Date.now() - currentActivityBlock.start;
+                        } else {
+                            todayData.blocks.push({
+                                type: currentActivityBlock.type,
+                                duration: Date.now() - currentActivityBlock.start,
+                            });
+                        }
+                        localStorage[todayStamp] = JSON.stringify(todayData);
+                    }
+
+                    if (!document.querySelector('#day-' + todayStamp)) {
+                        createDayElement(todayData);
+                    }
+                    let lastBlockEl = document.querySelector('#day-' + todayStamp + ' .block:last-child');
+                    if (!lastBlockEl.classList.contains('type-' + currentActivityBlock.type)) {
+                        const newBlockEl = createDiv('.block');
+                        newBlockEl.classList.add('type-' + currentActivityBlock.type);
+                        lastBlockEl.parentElement.appendChild(newBlockEl);
+                        lastBlockEl = newBlockEl;
+                    }
+                    lastBlockEl.style.width = ((Date.now() - currentActivityBlock.start) / widthInMs * 100) + '%';
+
+                    const durationsByType = {};
+                    todayData.blocks.forEach(block => {
+                        durationsByType[block.type] = durationsByType[block.type] || 0;
+                        durationsByType[block.type] += block.duration;
+                    });
+                    Object.entries(durationsByType).map(([type, totalDuration]) => {
+                        const hours = totalDuration / 3_600_000 | 0;
+                        const minutes = (totalDuration / 60_000 | 0) % 60;
+                        document.querySelector('button.type-' + type).title = `${hours}:${leadZero(minutes)}`;
+                    });
                 }
-                let lastBlockEl = document.querySelector('#day-' + todayStamp + ' .block:last-child');
-                if (!lastBlockEl.classList.contains('type-' + currentActivityBlock.type)) {
-                    const newBlockEl = createDiv('.block');
-                    newBlockEl.classList.add('type-' + currentActivityBlock.type);
-                    lastBlockEl.parentElement.appendChild(newBlockEl);
-                    lastBlockEl = newBlockEl;
+
+                function createDayElement(dayEntryData) {
+                    const dayEntryEl = createDiv('.day');
+                    dayEntryEl.id = 'day-' + dayEntryData.datestamp;
+                    const date = new Date(dayEntryData.datestamp);
+                    dayEntryEl.textContent = dayEntryData.datestamp === '2222-12-22' ?
+                        'Planned' :
+                        daysOfWeek[date.getDay() - 1] + ' ' + dayEntryData.datestamp;
+                    const line = createDiv('.line');
+                    dayEntryEl.appendChild(line);
+                    const notches = createDiv('.notches');
+                    Array(40).fill(0).forEach(() => notches.appendChild(createDiv('.notch')));
+                    dayEntryEl.appendChild(notches);
+
+                    const introBlock = createDiv('.block');
+                    introBlock.classList.add('type-empty');
+                    introBlock.style.width = ((dayEntryData.startTs - new Date(dayEntryData.datestamp + ' 08:00:00')) / widthInMs * 100) + '%';
+                    line.appendChild(introBlock);
+                    dayEntryData.blocks.forEach(blockData => {
+                        const blockEl = createDiv('.block');
+                        blockEl.classList.add('type-' + blockData.type);
+                        blockEl.style.width = (blockData.duration / widthInMs * 100) + '%';
+                        line.appendChild(blockEl);
+                    });
+
+                    const timelineEl = createDiv('.timeline');
+                    Array(11).fill(0).forEach((_, i) => {
+                        const hour = i + 8;
+                        const hourEl = createDiv('.hour');
+                        hourEl.textContent = hour;
+                        timelineEl.appendChild(hourEl);
+                    });
+                    dayEntryEl.appendChild(timelineEl);
+                    document.querySelector('#days').appendChild(dayEntryEl);
                 }
-                lastBlockEl.style.width = ((Date.now() - currentActivityBlock.start) / widthInMs * 100) + '%';
-
-                const durationsByType = {};
-                todayData.blocks.forEach(block => {
-                    durationsByType[block.type] = durationsByType[block.type] || 0;
-                    durationsByType[block.type] += block.duration;
-                });
-                Object.entries(durationsByType).map(([type, totalDuration]) => {
-                    const hours = totalDuration / 3_600_000 | 0;
-                    const minutes = (totalDuration / 60_000 | 0) % 60;
-                    document.querySelector('button.type-' + type).title = `${hours}:${leadZero(minutes)}`;
-                });
-            }
-
-            function createDayElement(dayEntryData) {
-                const dayEntryEl = createDiv('.day');
-                dayEntryEl.id = 'day-' + dayEntryData.datestamp;
-                const date = new Date(dayEntryData.datestamp);
-                dayEntryEl.textContent = dayEntryData.datestamp === '2222-12-22' ?
-                    'Planned' :
-                    daysOfWeek[date.getDay() - 1] + ' ' + dayEntryData.datestamp;
-                const line = createDiv('.line');
-                dayEntryEl.appendChild(line);
-                const notches = createDiv('.notches');
-                Array(40).fill(0).forEach(() => notches.appendChild(createDiv('.notch')));
-                dayEntryEl.appendChild(notches);
-
-                const introBlock = createDiv('.block');
-                introBlock.classList.add('type-empty');
-                introBlock.style.width = ((dayEntryData.startTs - new Date(dayEntryData.datestamp + ' 08:00:00')) / widthInMs * 100) + '%';
-                line.appendChild(introBlock);
-                dayEntryData.blocks.forEach(blockData => {
-                    const blockEl = createDiv('.block');
-                    blockEl.classList.add('type-' + blockData.type);
-                    blockEl.style.width = (blockData.duration / widthInMs * 100) + '%';
-                    line.appendChild(blockEl);
-                });
-
-                const timelineEl = createDiv('.timeline');
-                Array(11).fill(0).forEach((_, i) => {
-                    const hour = i + 8;
-                    const hourEl = createDiv('.hour');
-                    hourEl.textContent = hour;
-                    timelineEl.appendChild(hourEl);
-                });
-                dayEntryEl.appendChild(timelineEl);
-                document.querySelector('#days').appendChild(dayEntryEl);
-            }
+            })();
         </script>
     </body>
 </html>
