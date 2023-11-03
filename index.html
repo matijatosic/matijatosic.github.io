@@ -124,6 +124,12 @@
                     Object.entries(imports).forEach(([datestamp, data]) => {
                         if (!localStorage[datestamp]) {
                             localStorage[datestamp] = data;
+                            if (
+                                !localStorage.oldestEntry ||
+                                new Date(localStorage.oldestEntry) > new Date(datestamp)
+                            ) {
+                                localStorage.oldestEntry = datestamp;
+                            }
                         }
                     });
                 } catch(e) {}
