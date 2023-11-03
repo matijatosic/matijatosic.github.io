@@ -262,6 +262,9 @@
                 }
 
                 function createDayElement(dayEntryData) {
+                    if (dayEntryData.blocks.length === 1 && dayEntryData.blocks[0].duration === 0) {
+                        return;
+                    }
                     const dayEntryEl = createDiv('.day');
                     dayEntryEl.id = 'day-' + dayEntryData.datestamp;
                     const date = new Date(dayEntryData.datestamp);
