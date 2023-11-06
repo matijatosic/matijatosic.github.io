@@ -245,7 +245,11 @@
                         timelineEl.appendChild(hourEl);
                     });
                     dayEntryEl.appendChild(timelineEl);
-                    document.querySelector('#days').appendChild(dayEntryEl);
+
+                    document.querySelector('#days').insertBefore(
+                        dayEntryEl,
+                        document.querySelector('#2222-12-22')
+                    );
                     return dayEntryEl;
                 }
             })();
