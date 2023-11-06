@@ -1,0 +1,63 @@
+#buttons {
+    display: flex;
+    position: sticky;
+    top: 0;
+}
+
+button {
+    border-radius: 0;
+    width: 23%;
+    height: 50px;
+    margin: 1%;
+    color: white;
+    font-size: 15pt;
+    font-weight: bold;
+}
+
+.day {
+    font-family: sans-serif;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.day.today .line {
+    background: linear-gradient(to bottom, transparent, transparent, #FD8, transparent, transparent);
+}
+
+.line {
+    display: flex;
+    height: 30px;
+    border: 1px solid #DDD;
+    margin-top: 3px;
+}
+
+.notches {
+    display: flex;
+    height: 10px;
+}
+
+.notch {
+    width: 2.5%;
+    margin: 0;
+    border-right: 1px solid #EEE;
+    border-left: 1px solid #EEE;
+}
+
+.timeline {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10pt;
+    margin-top: 5px;
+    transform: scale(1.012);
+}
+
+.hour {
+    width: 20px;
+    font-family: sans-serif;
+}
+
+.type-W { background-color: #673AB7; }
+.type-LP { background-color: #a20000; }
+.type-DS { background-color: #ff9300; }
+.type-BR { background-color: #85ccff; }
+.type-empty { background-color: transparent; color: #000; }

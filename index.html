@@ -1,67 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <style>
-            #buttons {
-                display: flex;
-                position: sticky;
-                top: 0;
-            }
-
-            button {
-                border-radius: 0;
-                width: 23%;
-                height: 50px;
-                margin: 1%;
-                color: white;
-                font-size: 15pt;
-                font-weight: bold;
-            }
-
-            .day {
-                font-family: sans-serif;
-                margin: 20px 0;
-                text-align: center;
-            }
-
-            .line {
-                display: flex;
-                height: 30px;
-                border: 1px solid #DDD;
-                margin-top: 3px;
-            }
-
-            .notches {
-                display: flex;
-                height: 10px;
-            }
-
-            .notch {
-                width: 2.5%;
-                margin: 0;
-                border-right: 1px solid #EEE;
-                border-left: 1px solid #EEE;
-            }
-
-            .timeline {
-                display: flex;
-                justify-content: space-between;
-                font-size: 10pt;
-                margin-top: 5px;
-                transform: scale(1.012);
-            }
-
-            .hour {
-                width: 20px;
-                font-family: sans-serif;
-            }
-
-            .type-W { background-color: #673AB7; }
-            .type-LP { background-color: #a20000; }
-            .type-DS { background-color: #ff9300; }
-            .type-BR { background-color: #85ccff; }
-            .type-empty { background-color: transparent; color: #000; }
-        </style>
+        <link rel="stylesheet" href="./styles.css" />
     </head>
     <body>
         <div id="buttons">
@@ -100,7 +40,7 @@
                 }
             */
 
-            const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             const widthInMs = (18 - 8) * 60 * 60 * 1000;
 
             (async () => {
@@ -237,9 +177,18 @@
                         localStorage[todayStamp] = JSON.stringify(todayData);
                     }
 
-                    if (!document.querySelector('#day-' + todayStamp)) {
-                        createDayElement(todayData);
+                    let todayEl = document.querySelector('#day-' + todayStamp);
+                    if (!todayEl) {
+                        todayEl = createDayElement(todayData);
                     }
+                    if (todayEl) {
+                        const markedAsToday = document.querySelector('.today');
+                        if (todayEl !== markedAsToday) {
+                            todayEl.classList.add('today');
+                            markedAsToday?.classList.remove('today');
+                        }
+                    }
+
                     let lastBlockEl = document.querySelector('#day-' + todayStamp + ' .block:last-child');
                     if (!lastBlockEl.classList.contains('type-' + currentActivityBlock.type)) {
                         const newBlockEl = createDiv('.block');
@@ -263,14 +212,14 @@
 
                 function createDayElement(dayEntryData) {
                     if (dayEntryData.blocks.length === 1 && dayEntryData.blocks[0].duration === 0) {
-                        return;
+                        return null;
                     }
                     const dayEntryEl = createDiv('.day');
                     dayEntryEl.id = 'day-' + dayEntryData.datestamp;
                     const date = new Date(dayEntryData.datestamp);
                     dayEntryEl.textContent = dayEntryData.datestamp === '2222-12-22' ?
                         'Planned' :
-                        daysOfWeek[date.getDay() - 1] + ' ' + dayEntryData.datestamp;
+                        daysOfWeek[date.getDay()] + ' ' + dayEntryData.datestamp;
                     const line = createDiv('.line');
                     dayEntryEl.appendChild(line);
                     const notches = createDiv('.notches');
@@ -297,6 +246,7 @@
                     });
                     dayEntryEl.appendChild(timelineEl);
                     document.querySelector('#days').appendChild(dayEntryEl);
+                    return dayEntryEl;
                 }
             })();
         </script>
