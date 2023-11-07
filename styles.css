@@ -2,6 +2,8 @@
     display: flex;
     position: sticky;
     top: 0;
+    background: linear-gradient(to top, transparent 0%, white 25%, white);
+    padding: 5px 0 20px;
 }
 
 button {
@@ -21,7 +23,16 @@ button {
 }
 
 .day.today .line {
-    background: linear-gradient(to bottom, transparent, transparent, #FD8, transparent, transparent);
+    background: linear-gradient(
+        to bottom,
+        transparent 15%,
+        #FD8 30%,
+        transparent 45%,
+        transparent 55%,
+        #FD8 70%,
+        transparent 85%,
+        transparent
+    );
 }
 
 .line {
