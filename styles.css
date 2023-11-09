@@ -24,7 +24,12 @@ button {
 }
 
 .day.today .line {
-    box-shadow: 0 0 10px 30px #FD8;
+    box-shadow: 0 0 20px 20px #FD8;
+}
+
+.day.today .notch {
+    border-right: 1px solid #111;
+    border-left: 1px solid #111;
 }
 
 .line {
@@ -42,8 +47,8 @@ button {
 .notch {
     width: 2.5%;
     margin: 0;
-    border-right: 1px solid #EEE;
-    border-left: 1px solid #EEE;
+    border-right: 1px solid #CCC;
+    border-left: 1px solid #CCC;
 }
 
 .timeline {
