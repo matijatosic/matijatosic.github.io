@@ -19,16 +19,15 @@
             window.addEventListener("devicemotion", (e) => {
                 let { x, y, z } = e.acceleration;
                 imgLeft += MOTION_CORRECTION_MULT * x;
-                top += MOTION_CORRECTION_MULT * y;
-                updatePos();
+                imgTop += MOTION_CORRECTION_MULT * y;
             });
 
             setInterval(() => {
                 if (Math.abs(imgLeft) > 1) {
                     imgLeft -= BACK_CORRECTION_MULT * (imgLeft / Math.abs(imgLeft));
                 }
-                if (Math.abs(top) > 1) {
-                    top -= BACK_CORRECTION_MULT * (top / Math.abs(top));
+                if (Math.abs(imgTop) > 1) {
+                    imgTop -= BACK_CORRECTION_MULT * (imgTop / Math.abs(imgTop));
                 }
                 updatePos();
             }, 16);
