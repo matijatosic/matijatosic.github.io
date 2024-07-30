@@ -10,17 +10,12 @@
 
 
         <script>
-            let updateMotion = false;
-            let updateOrientation = false;
-            setInterval(() => { updateMotion = true; updateOrientation = true; }, 1000);
             window.addEventListener("devicemotion", (e) => {
-                if (!updateMotion) return;
                 document.getElementById('motion-txt').innerHTML = JSON.stringify({
                     x: e.acceleration.x,
                     y: e.acceleration.y,
                     z: e.acceleration.z,
                 }, null, 2);
-                updateMotion = false;
             });
             // window.addEventListener("deviceorientation", (e) => {
             //     if (!updateOrientation) return;
