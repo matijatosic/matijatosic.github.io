@@ -23,12 +23,12 @@
             });
 
             setInterval(() => {
-                if (Math.abs(imgLeft) > 1) {
-                    imgLeft -= BACK_CORRECTION_MULT * (imgLeft / Math.abs(imgLeft));
-                }
-                if (Math.abs(imgTop) > 1) {
-                    imgTop -= BACK_CORRECTION_MULT * (imgTop / Math.abs(imgTop));
-                }
+                // if (Math.abs(imgLeft) > 1) {
+                //     imgLeft -= BACK_CORRECTION_MULT * (imgLeft / Math.abs(imgLeft));
+                // }
+                // if (Math.abs(imgTop) > 1) {
+                //     imgTop -= BACK_CORRECTION_MULT * (imgTop / Math.abs(imgTop));
+                // }
                 updatePos();
             }, 16);
 
