@@ -12,9 +12,9 @@
         <script>
             window.addEventListener("devicemotion", (e) => {
                 document.getElementById('motion-txt').innerHTML = JSON.stringify({
-                    x: ('' + e.acceleration.x).substring(0, 10),
-                    y: ('' + e.acceleration.y).substring(0, 10),
-                    z: ('' + e.acceleration.z).substring(0, 10),
+                    x: ('' + e.acceleration.x).substring(0, 10).replace(/^0/, ' 0'),
+                    y: ('' + e.acceleration.y).substring(0, 10).replace(/^0/, ' 0'),
+                    z: ('' + e.acceleration.z).substring(0, 10).replace(/^0/, ' 0'),
                 }, null, 2);
             });
             // window.addEventListener("deviceorientation", (e) => {
