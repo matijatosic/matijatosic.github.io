@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+    <body>
+        <!-- <img src="" /> -->
+
+        <textarea id="motion-txt"></textarea>
+        <textarea id="orientation-txt"></textarea>
+
+
+        <script>
+            let updateMotion = false;
+            let updateOrientation = false;
+            setInterval(() => { updateMotion = true; updateOrientation = true; }, 1000);
+            window.addEventListener("devicemotion", (e) => {
+                if (!updateMotion) return;
+                document.getElementById('motion-txt').innerHTML = JSON.stringify(e, null, 2);
+                updateMotion = false;
+            });
+            window.addEventListener("deviceorientation", (e) => {
+                if (!updateOrientation) return;
+                document.getElementById('orientation-txt').innerHTML = JSON.stringify(e, null, 2);
+                updateOrientation = false;
+            });
+        </script>
+    </body>
+</html>
