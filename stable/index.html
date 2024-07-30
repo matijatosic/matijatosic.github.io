@@ -13,21 +13,22 @@
             let imgLeft = 0, imgTop = 0;
             const img = document.getElementById('img');
 
-            const CORRECTION_MULT = 1;
+            const BACK_CORRECTION_MULT = 1;
+            const MOTION_CORRECTION_MULT = 1;
 
             window.addEventListener("devicemotion", (e) => {
                 let { x, y, z } = e.acceleration;
-                imgLeft += 0.01 * x;
-                top += 0.01 * y;
+                imgLeft += MOTION_CORRECTION_MULT * x;
+                top += MOTION_CORRECTION_MULT * y;
                 updatePos();
             });
 
             setInterval(() => {
                 if (Math.abs(imgLeft) > 1) {
-                    imgLeft -= CORRECTION_MULT * (imgLeft / Math.abs(imgLeft));
+                    imgLeft -= BACK_CORRECTION_MULT * (imgLeft / Math.abs(imgLeft));
                 }
                 if (Math.abs(top) > 1) {
-                    top -= CORRECTION_MULT * (top / Math.abs(top));
+                    top -= BACK_CORRECTION_MULT * (top / Math.abs(top));
                 }
                 updatePos();
             }, 16);
