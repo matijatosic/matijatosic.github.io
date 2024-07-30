@@ -3,7 +3,7 @@
     <head>
     </head>
     <body>
-        <!-- <img src="" /> -->
+        <!-- <img src="./img.jpg" style="width: 100vw; position: fixed; top: 0; left: 0;" /> -->
 
         <textarea id="motion-txt" rows="20" style="width: 100%"></textarea>
         <!-- <textarea id="orientation-txt"></textarea> -->
@@ -11,10 +11,11 @@
 
         <script>
             window.addEventListener("devicemotion", (e) => {
+                let { x, y, z } = e.acceleration;
                 document.getElementById('motion-txt').innerHTML = JSON.stringify({
-                    x: ('' + e.acceleration.x).substring(0, 10).replace(/^0/, ' 0'),
-                    y: ('' + e.acceleration.y).substring(0, 10).replace(/^0/, ' 0'),
-                    z: ('' + e.acceleration.z).substring(0, 10).replace(/^0/, ' 0'),
+                    x: ('' + x).substring(0, 10).replace(/^0/, ' 0'),
+                    y: ('' + y).substring(0, 10).replace(/^0/, ' 0'),
+                    z: ('' + z).substring(0, 10).replace(/^0/, ' 0'),
                 }, null, 2);
             });
             // window.addEventListener("deviceorientation", (e) => {
