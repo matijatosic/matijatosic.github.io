@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+
+        <style>
+            .polje {
+                height: 10vh;
+                display: flex;
+                border-bottom: 1px solid lightgray;
+                position: relative;
+                font-size: 50pt;
+                font-family: "Unifront Upper";
+            }
+            .polje .ime {
+                width: 25vw;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .polje .increase {
+                position: absolute;
+                right: 0;
+                width: 25vw;
+                height: 10vh;
+                font-size: 40pt;
+            }
+            .polje .vreme {
+                position: absolute;
+                right: 26vw;
+                bottom: 1vw;
+                font-size: 30pt;
+            }
+            .polje .recke {
+                font-size: 50pt;
+            }
+            #toto .ime {
+                background-color: #222;
+                color: white;
+            }
+            #endi .ime {
+                background-color: #EEE;
+            }
+            #lusi .ime {
+                background-color: rgb(80, 39, 36);
+                color: white;
+            }
+            #zule .ime {
+                background-color: rgb(255, 136, 0);
+            }
+
+            #undo {
+                display: none;
+                position: fixed;
+                right: 0;
+                bottom: 0;
+                font-size: 50pt;
+                width: 25vw;
+                height: 25vw;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="polje" id="toto">
+            <div class="ime"><div class="tekst">TOTO</div></div>
+            <div class="recke"></div>
+            <div class="vreme"></div>
+            <button class="increase">+</button>
+        </div>
+        <div class="polje" id="endi">
+            <div class="ime"><div class="tekst">ENDI</div></div>
+            <div class="recke"></div>
+            <div class="vreme"></div>
+            <button class="increase">+</button>
+        </div>
+        <div class="polje" id="lusi">
+            <div class="ime"><div class="tekst">LUSI</div></div>
+            <div class="recke"></div>
+            <div class="vreme"></div>
+            <button class="increase">+</button>
+        </div>
+        <div class="polje" id="zule">
+            <div class="ime"><div class="tekst">ZULE</div></div>
+            <div class="recke"></div>
+            <div class="vreme"></div>
+            <button class="increase">+</button>
+        </div>
+
+        <button id="undo">&#9100;</button>
+
+        <script>
+            const ticks = localStorage.ticks ? JSON.parse(localStorage.ticks) : [];
+            const ticksToUndo = localStorage.ticksToUndo ? JSON.parse(localStorage.ticksToUndo) : [];
+            let undoTimeout;
+
+            if (ticks.length) {
+                document.querySelectorAll('.polje').forEach(f => {
+                    rewriteTicks(f.id);
+                    rewriteTime(f.id);
+                });
+            }
+
+            document.querySelectorAll('.increase').forEach(btn => btn.addEventListener('click', e => {
+                const name = e.target.parentElement.id;
+                ticks.push({ name, time: Date.now() });
+                saveTicks();
+                rewriteTicks(name);
+                rewriteTime(name);
+
+                document.querySelector('#undo').style.display = 'block';
+                clearTimeout(undoTimeout);
+                undoTimeout = setTimeout(() => {
+                    document.querySelector('#undo').style.display = '';
+                    ticksToUndo.length = 0;
+                }, 10000);
+            }));
+
+            document.querySelector('#undo').addEventListener('click', e => {
+                const lastTick = ticks.pop();
+                if (!lastTick) return;
+                saveTicks();
+                rewriteTicks(lastTick.name);
+                rewriteTime(lastTick.name);
+            });
+
+            function rewriteTicks(name) {
+                const ticksContainer = document.querySelector(`#${name} .recke`);
+                ticksContainer.innerHTML = '';
+                const relevantTicksCount = ticks.filter(t => t.name === name).length;
+
+                for (let i = 0; i < (relevantTicksCount / 5 | 0); i++) {
+                    ticksContainer.innerHTML += ' <span style="text-decoration: line-through">||||</span> ';
+                }
+                for (let i = 0; i < relevantTicksCount % 5; i++) {
+                    ticksContainer.innerHTML += '<span>|</span>';
+                }
+                // for (let i = 0; i < (relevantTicksCount / 5 | 0); i++) {
+                //     ticksContainer.innerHTML += '&#119672;';
+                // }
+                // for (let i = 0; i < relevantTicksCount % 5; i++) {
+                //     ticksContainer.innerHTML += '&#119671;';
+                // }
+            }
+
+            function rewriteTime(name) {
+                const timeContainer = document.querySelector(`#${name} .vreme`);
+                const relevantTicks = ticks.filter(t => t.name === name);
+                const lastTick = relevantTicks[relevantTicks.length - 1];
+
+                if (lastTick) {
+                    timeContainer.textContent = formatTime(Date.now() - lastTick.time);
+                } else {
+                    timeContainer.textContent = '';
+                }
+            }
+
+            function formatTime(ms) {
+                let minutes = (ms / 60000 | 0);
+                let hours = 0;
+                if (minutes > 60) {
+                    hours = minutes / 60 | 0;
+                    minutes %= 60;
+                }
+                return (hours ? (hours + 'h') : '') + minutes + 'm';
+            }
+
+            function saveTicks() {
+                localStorage.ticks = JSON.stringify(ticks);
+                localStorage.ticksToUndo = JSON.stringify(ticksToUndo);
+            }
+
+            setInterval(() => {
+                document.querySelectorAll('.polje').forEach(f => {
+                    rewriteTime(f.id);
+                });
+            }, 30000);
+        </script>
+    </body>
+</html>
